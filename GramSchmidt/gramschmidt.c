@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #define N 3
 #define FOR_N(iter) for(int iter=0; iter<N; iter++)
@@ -11,14 +13,13 @@ void generamatrice(double [][N]);
 void stampamatrice(double [][N]);
 double norma(double []);
 int main(int narg, char ** args){
-	srand48(time(NULL));
+	int fd_urandom=open("/dev/urandom",O_RDONLY);
+	unsigned long seed;
+	(fd_urandom!=-1)? read(fd_urandom,&seed,sizeof(long)) : (seed=time(NULL)) ;
+	srand48(seed);
 	double matrice[N][N]={0};
 	generamatrice(matrice);
 	stampamatrice(matrice);
-	
-	double vettore[N];
-
-
 }
 
 
