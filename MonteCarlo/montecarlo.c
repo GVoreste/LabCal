@@ -2,9 +2,12 @@
 #include <time.h>
 #include <stdio.h>
 #include <math.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #define TRUE  1
 #define FALSE 0
+#define VERBOSE
 
 #define Xmax 10
 #define Nmin 1000
@@ -50,14 +53,21 @@ int main(int narg, char * * argv){
 		printf("Reinsert N value:\t");
 		scanf("%i",&N);
 	}
-	srand48(time(NULL));
+
+	int urandom_fd=open("/dev/urandom",O_RDONLY);
+	unsigned long seed;
+	(urandom_fd!=-1)? read(urandom_fd,&seed,sizeof(long)) : (seed=time(NULL));	
+	srand48(seed);
+
 	double x,P;
 	int histo[M]={0};
 	double histoNorm[M];
 	for(int i=0; i<N; i++){
 		x=hitAndMiss(lam);
 		P=pdist(lam,x);
-		if(i<TOprint) printf("%.5lf %.5lf\n",x,P);
+		#ifdef VERBOSE
+			if(i<TOprint) printf("%.5lf %.5lf\n",x,P);
+		#endif
 		for(int j=0; j<M; j++){
 			if(x>=j*dx && x<(j+1)*dx){
 			       	histo[j]++;
